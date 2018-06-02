@@ -6,6 +6,8 @@ SOLCFLAGS=--abi --bin
 
 all: compile_contracts init run
 
+restart: clear all
+
 compile_contracts:
 	cd $(CONTRACTSPATH) && $(SOLC) $(SOLCFLAGS) *.sol
 	find $(CONTRACTSPATH) -name *.abi | sed -e 'p;s/\.abi$//\.json/' | xargs -n2 mv

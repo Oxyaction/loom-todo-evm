@@ -28,7 +28,12 @@ contract TodoList {
         Done(msg.sender, id);
     }
 
-    function read() public view returns (Todo[]) {
-        return todos[msg.sender];
+    function todosCount() public view returns (uint, address) {
+        return (todos[msg.sender].length, msg.sender);
+    }
+
+    function getTodo(uint id) public view returns (string text, bool done) {
+        text = todos[msg.sender][id].text;
+        done = todos[msg.sender][id].done;
     }
 }

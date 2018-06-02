@@ -4,7 +4,7 @@
             "vm": "EVM",
             "format": "hex",
             "name": "TodoList",
-            "location": "contracts/TodoList_sol_TodoList.bin"
+            "location": "/Users/alexandrkompaniets/web/loom/loom-todo-evm/dappchain/contracts/TodoList_sol_TodoList.bin"
         }
     ]
 }

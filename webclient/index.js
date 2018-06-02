@@ -14,8 +14,13 @@ const {
 
 const ABI = require('../dappchain/contracts/TodoList_sol_TodoList');
 
-class ContractClientLoomProvider {
-  async createContract(privateKey, publicKey) {
+class ContractClient {
+  constructor(privateKey, publicKey) {
+    this.privateKey = privateKey;
+    this.publicKey = publicKey;
+  }
+
+  async createContract() {
     const client = new Client(
       'default',
       'ws://127.0.0.1:46657/websocket',
@@ -23,24 +28,47 @@ class ContractClientLoomProvider {
     );
 
     client.txMiddleware = [
-      new NonceTxMiddleware(publicKey, client),
-      new SignedTxMiddleware(privateKey)
+      new NonceTxMiddleware(this.publicKey, client),
+      new SignedTxMiddleware(this.privateKey)
     ];
 
-    const from = LocalAddress.fromPublicKey(publicKey).toString();
+    this.from = LocalAddress.fromPublicKey(this.publicKey).toString();
     const web3 = new Web3(new LoomProvider(client));
 
     const loomContractAddress = await client.getContractAddressAsync('TodoList');
+
     const contractAddress = CryptoUtils.bytesToHexAddr(loomContractAddress.local.bytes);
 
-    this.contract = new web3.eth.Contract(ABI, contractAddress, { from });
+    this.contract = new web3.eth.Contract(ABI, contractAddress, { from: this.from });
   }
 
   addTodo(text) {
-    return this.contract.methods.add('buy milk').call();
+    console.log(this.from);
+    return this.contract.methods.add(text).send();
   }
 
-  getConstant() {
-    return this.contract.methods.getConstant().call();
+  getTodoCount() {
+    return this.contract.methods.todosCount().call();
+  }
+
+  getTodo(id) {
+    return this.contract.methods.getTodo(id).call();
   }
 }
+
+(async () => {
+  const priv = Buffer.from('60ffab7587bc6651e41ae3f03b339b5ad156d4a54a880bf91531acaaf524bbea3ece0e362a98696a59683af08c154285b2849f539f3efd2576973f2d715d59c2', 'hex')
+  const pub = CryptoUtils.publicKeyFromPrivateKey(priv);
+
+  const client = new ContractClient(priv, pub);
+  await client.createContract();
+
+  try {
+    let res = await client.addTodo('buy milk');
+    console.log(res.events.Added.returnValues);
+    res = await client.getTodoCount();
+    console.log(res);
+  } catch (e) {
+    console.log(e);
+  }
+})();
