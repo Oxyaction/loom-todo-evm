@@ -1,0 +1,10 @@
+{
+    "contracts": [
+        {
+            "vm": "EVM",
+            "format": "hex",
+            "name": "TodoList",
+            "location": "contracts/TodoList_sol_TodoList.bin"
+        }
+    ]
+}
