@@ -43,7 +43,6 @@ class ContractClient {
   }
 
   addTodo(text) {
-    console.log(this.from);
     return this.contract.methods.add(text).send();
   }
 
@@ -69,6 +68,6 @@ class ContractClient {
     res = await client.getTodoCount();
     console.log(res);
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 })();
